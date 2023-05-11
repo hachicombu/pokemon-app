@@ -11,7 +11,7 @@ export const Card = ({ pokemon }) => {
       <div className="cardTypes">
         <div>タイプ</div>
         {pokemon.types.map((type) => (
-          <div>
+          <div key={type.type.name}>
             <span className="typeName">{type.type.name}</span>
           </div>
         ))}

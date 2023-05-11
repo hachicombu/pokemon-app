@@ -1,22 +1,33 @@
 import { useEffect, useState } from "react";
 import { getAllPokemon, getPokemon } from "./util/api";
 import "./App.css";
-import { Card } from "./components/Card";
+import { Card } from "./components/Card/Card";
+import { Navbar } from "./components/Navbar/Navbar";
+
+const initialURL = "https://pokeapi.co/api/v2/pokemon";
 
 function App() {
   // ローディング表示
   const [loading, setLoading] = useState(true);
   const [pokemonData, setPokemonData] = useState([]);
-  const initialURL = "https://pokeapi.co/api/v2/pokemon";
+  const [nextURL, setNextURL] = useState("");
+  const [prevURL, setPrevURL] = useState("");
 
+  // 初期表示
   useEffect(() => {
     const fetchPokemonData = async () => {
       // 全データ取得
       const res = await getAllPokemon(initialURL);
+      // console.log(res.next);
 
       // 各ポケモンの詳細データを取得
       loadPokemon(res.results);
 
+      // next/prevページURLをセット
+      setNextURL(res.next);
+      setPrevURL(res.previous); //null
+
+      // ローディング終了
       setLoading(false);
     };
 
@@ -33,17 +44,47 @@ function App() {
     );
     setPokemonData(pokemonData);
   };
+
+  // ページ遷移
+  const handlePrevPage = async () => {
+    if (!prevURL) return;
+    setLoading(true);
+    const data = await getAllPokemon(prevURL);
+    await loadPokemon(data.results);
+    setNextURL(data.next);
+    setPrevURL(data.previous);
+    setLoading(false);
+  };
+
+  const handleNextPage = async () => {
+    if (!nextURL) return;
+
+    setLoading(true);
+    const data = await getAllPokemon(nextURL);
+    await loadPokemon(data.results);
+    // 次のページURLをセット
+    setNextURL(data.next);
+    setPrevURL(data.previous);
+    setLoading(false);
+  };
   return (
     <>
-      {loading ? (
-        <h1>loading...</h1>
-      ) : (
-        <div className="pokemonCardContainer">
-          {pokemonData.map((pokemon) => (
-            <Card key={pokemon.id} pokemon={pokemon} />
-          ))}
+      <Navbar />
+      <div className="App">
+        {loading ? (
+          <h1>loading...</h1>
+        ) : (
+          <div className="pokemonCardContainer">
+            {pokemonData.map((pokemon) => (
+              <Card key={pokemon.id} pokemon={pokemon} />
+            ))}
+          </div>
+        )}
+        <div className="btn">
+          <button onClick={handlePrevPage}>前へ</button>
+          <button onClick={handleNextPage}>次へ</button>
         </div>
-      )}
+      </div>
     </>
   );
 }
