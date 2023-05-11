@@ -3,6 +3,7 @@ import { getAllPokemon, getPokemon } from "./util/api";
 import "./App.css";
 import { Card } from "./components/Card/Card";
 import { Navbar } from "./components/Navbar/Navbar";
+import { Button } from "./components/Button/Button";
 
 const initialURL = "https://pokeapi.co/api/v2/pokemon";
 
@@ -18,7 +19,6 @@ function App() {
     const fetchPokemonData = async () => {
       // 全データ取得
       const res = await getAllPokemon(initialURL);
-      // console.log(res.next);
 
       // 各ポケモンの詳細データを取得
       loadPokemon(res.results);
@@ -80,9 +80,9 @@ function App() {
             ))}
           </div>
         )}
-        <div className="btn">
-          <button onClick={handlePrevPage}>前へ</button>
-          <button onClick={handleNextPage}>次へ</button>
+        <div className="btnContainer">
+          <Button handleClick={handlePrevPage} text="前へ" />
+          <Button handleClick={handleNextPage} text="次へ" />
         </div>
       </div>
     </>
