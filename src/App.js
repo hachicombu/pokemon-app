@@ -5,36 +5,32 @@ import { Card } from "./components/Card/Card";
 import { Navbar } from "./components/Navbar/Navbar";
 import { Button } from "./components/Button/Button";
 
-const initialURL = "https://pokeapi.co/api/v2/pokemon";
-
 function App() {
   // ローディング表示
   const [loading, setLoading] = useState(true);
   const [pokemonData, setPokemonData] = useState([]);
-  const [nextURL, setNextURL] = useState("");
-  const [prevURL, setPrevURL] = useState("");
+  // {prev, next}
+  const [urls, setURLs] = useState({});
 
   // 初期表示
   useEffect(() => {
     const fetchPokemonData = async () => {
-      // 全データ取得
-      const res = await getAllPokemon(initialURL);
+      // 全データ取得（URL）
+      const res = await getAllPokemon();
 
       // 各ポケモンの詳細データを取得
-      loadPokemon(res.results);
+      loadPokemon(res.results); // name,url
 
       // next/prevページURLをセット
-      setNextURL(res.next);
-      setPrevURL(res.previous); //null
+      setURLs({ ...urls, next: res.next });
 
-      // ローディング終了
+      // ローディング終了z
       setLoading(false);
     };
 
     fetchPokemonData();
   }, []);
 
-  // 後で切り離し
   // data: array[obj{name,url}]
   const loadPokemon = async (data) => {
     const pokemonData = await Promise.all(
@@ -47,24 +43,19 @@ function App() {
 
   // ページ遷移
   const handlePrevPage = async () => {
-    if (!prevURL) return;
     setLoading(true);
-    const data = await getAllPokemon(prevURL);
+    const data = await getPokemon(urls.prev);
     await loadPokemon(data.results);
-    setNextURL(data.next);
-    setPrevURL(data.previous);
+    setURLs({ ...urls, prev: data.previous, next: data.next });
     setLoading(false);
   };
 
   const handleNextPage = async () => {
-    if (!nextURL) return;
-
     setLoading(true);
-    const data = await getAllPokemon(nextURL);
+    const data = await getPokemon(urls.next);
     await loadPokemon(data.results);
     // 次のページURLをセット
-    setNextURL(data.next);
-    setPrevURL(data.previous);
+    setURLs({ ...urls, prev: data.previous, next: data.next });
     setLoading(false);
   };
   return (
@@ -81,8 +72,8 @@ function App() {
           </div>
         )}
         <div className="btnContainer">
-          <Button handleClick={handlePrevPage} text="前へ" />
-          <Button handleClick={handleNextPage} text="次へ" />
+          {urls.prev && <Button handleClick={handlePrevPage} text="前へ" />}
+          {urls.next && <Button handleClick={handleNextPage} text="次へ" />}
         </div>
       </div>
     </>
