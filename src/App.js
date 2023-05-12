@@ -22,7 +22,7 @@ function App() {
       // next/prevページURLをセット
       setURLs({ ...urls, next: res.next });
 
-      // ローディング終了z
+      // ローディング終了
       setLoading(false);
     };
 
