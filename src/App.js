@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAllPokemon, getPokemon } from "./util/api";
-import "./App.css";
-import { Card } from "./components/Card/Card";
 import { Navbar } from "./components/Navbar/Navbar";
-import { Button } from "./components/Button/Button";
+import { Main } from "./components/Main/Main";
 
 function App() {
   // ローディング表示
@@ -24,7 +22,7 @@ function App() {
       // next/prevページURLをセット
       setURLs({ ...urls, next: res.next });
 
-      // ローディング終了z
+      // ローディング終了
       setLoading(false);
     };
 
@@ -61,21 +59,13 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="App">
-        {loading ? (
-          <h1>loading...</h1>
-        ) : (
-          <div className="pokemonCardContainer">
-            {pokemonData.map((pokemon) => (
-              <Card key={pokemon.id} pokemon={pokemon} />
-            ))}
-          </div>
-        )}
-        <div className="btnContainer">
-          {urls.prev && <Button handleClick={handlePrevPage} text="前へ" />}
-          {urls.next && <Button handleClick={handleNextPage} text="次へ" />}
-        </div>
-      </div>
+      <Main
+        loading={loading}
+        pokemonData={pokemonData}
+        urls={urls}
+        handleNextPage={handleNextPage}
+        handlePrevPage={handlePrevPage}
+      />
     </>
   );
 }

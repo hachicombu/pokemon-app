@@ -4,7 +4,6 @@ const initialURL = "https://pokeapi.co/api/v2/pokemon";
 
 export const getAllPokemon = async () => {
   const result = await axios.get(initialURL);
-  console.log(result.data);
   return result.data;
 };
 
